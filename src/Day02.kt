@@ -32,7 +32,11 @@ private fun initCubeColors(redSize: Int = 0, blueSize: Int = 0, greenSize: Int =
 
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.mapIndexed { i, s -> if (p21(s, initCubeColors(12, 14, 13))) i + 1 else 0 }.sumOf { it }
+        return input.mapIndexed { i, s ->
+            p21(s, initCubeColors(12, 14, 13)) { cubeSize, digit ->
+                if (cubeSize >= digit) i + 1 else 0
+            }
+        }.sumOf { it }
     }
 
     fun part2(input: List<String>): Int {
@@ -45,10 +49,10 @@ fun main() {
 }
 
 
-private fun p21(s: String, cubes: HashMap<String, Color>): Boolean {
+private fun p21(s: String, cubes: HashMap<String, Color>, action: (cubeSize: Int, digit: Int) -> Int): Int {
     var index = 0
     var d = ""
-    var result = true
+    var result = -1
 
     val str = s.substring(s.indexOf(':') + 1, s.length)
 
@@ -63,7 +67,7 @@ private fun p21(s: String, cubes: HashMap<String, Color>): Boolean {
             'r', 'g', 'b' -> {
                 val color = cubes[rgb[char]]!!
                 j = color.nameLength() - 1
-                result = color.cubeSize >= d.toInt()
+                result = action(color.cubeSize, d.toInt())
             }
 
             ',', ';' -> {
@@ -71,8 +75,7 @@ private fun p21(s: String, cubes: HashMap<String, Color>): Boolean {
             }
         }
 
-        if (!result) break
-
+        if (result == 0) break
         index += j
     }
 
