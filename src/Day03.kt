@@ -1,3 +1,4 @@
+private const val CURRENT_DAY = "Day04"
 fun main() {
     fun part1(input: List<String>): Int {
         return p31(input.map { it.toCharArray() })
@@ -7,7 +8,7 @@ fun main() {
         return p32(input.map { it.toCharArray() })
     }
 
-    val input = readInput("Day03")
+    val input = readInput(CURRENT_DAY)
     part1(input).println()
     part2(input).println()
 }

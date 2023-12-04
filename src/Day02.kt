@@ -1,51 +1,69 @@
+private const val CURRENT_DAY = "Day02"
+
+val rgb = mapOf(
+    'r' to Color.Red().name,
+    'g' to Color.Green().name,
+    'b' to Color.Blue().name
+)
+
+sealed class Color(open val name: String, open var cubeSize: Int) {
+    data class Red(override val name: String = "red", override var cubeSize: Int = 0) : Color(name, cubeSize)
+
+    data class Blue(override val name: String = "blue", override var cubeSize: Int = 0) : Color(name, cubeSize)
+
+    data class Green(override val name: String = "green", override var cubeSize: Int = 0) : Color(name, cubeSize)
+
+    fun nameLength(): Int {
+        return name.length
+    }
+}
+
+private fun initCubeColors(redSize: Int = 0, blueSize: Int = 0, greenSize: Int = 0): HashMap<String, Color> {
+    val red = Color.Red(cubeSize = redSize)
+    val blue = Color.Blue(cubeSize = blueSize)
+    val green = Color.Green(cubeSize = greenSize)
+
+    return hashMapOf(
+        Pair<String, Color>(red.name, red),
+        Pair<String, Color>(blue.name, blue),
+        Pair<String, Color>(green.name, green)
+    )
+}
+
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.mapIndexed { i, s -> if (p21(s)) i + 1 else 0 }.sumOf { it }
+        return input.mapIndexed { i, s -> if (p21(s, initCubeColors(12, 14, 13))) i + 1 else 0 }.sumOf { it }
     }
 
     fun part2(input: List<String>): Int {
-        return input.sumOf { s -> p22(s) }
+        return input.sumOf { s -> p22(s, initCubeColors()) }
     }
 
-    val input = readInput("Day02")
+    val input = readInput(CURRENT_DAY)
     part1(input).println()
     part2(input).println()
 }
 
-private fun p21(s: String): Boolean {
-    val r = "red"
-    val b = "green"
-    val g = "blue"
 
-    val cubes = hashMapOf(Pair(r, 12), Pair(g, 13), Pair(b, 14))
-
-    var i = 0
+private fun p21(s: String, cubes: HashMap<String, Color>): Boolean {
+    var index = 0
     var d = ""
     var result = true
 
-    val ss = s.substring(s.indexOf(':') + 1, s.length)
+    val str = s.substring(s.indexOf(':') + 1, s.length)
 
-    while (i < ss.length) {
+    while (index < str.length) {
         var j = 1
 
-        when (ss[i]) {
+        when (val char = str[index]) {
             in '0'..'9' -> {
-                d += ss[i]
+                d += str[index]
             }
 
-            'r' -> {
-                j = r.length - 1
-                result = cubes[r]!! >= d.toInt()
-            }
-
-            'g' -> {
-                j = g.length - 1
-                result = cubes[g]!! >= d.toInt()
-            }
-
-            'b' -> {
-                j = b.length - 1
-                result = cubes[b]!! >= d.toInt()
+            'r', 'g', 'b' -> {
+                val color = cubes[rgb[char]]!!
+                j = color.nameLength() - 1
+                result = color.cubeSize >= d.toInt()
             }
 
             ',', ';' -> {
@@ -55,54 +73,41 @@ private fun p21(s: String): Boolean {
 
         if (!result) break
 
-        i += j
+        index += j
     }
 
     return result
 }
 
-private fun p22(s: String): Int {
-    val r = "red"
-    val g = "green"
-    val b = "blue"
+private fun p22(s: String, cubes: HashMap<String, Color>): Int {
+    var index = 0
+    var digits = ""
 
-    val cubes = mutableMapOf<String, Int>()
+    val str = s.substring(s.indexOf(':') + 1, s.length)
 
-    var i = 0
-    var d = ""
-
-    val ss = s.substring(s.indexOf(':') + 1, s.length)
-
-    while (i < ss.length) {
+    while (index < str.length) {
         var j = 1
 
-        when (ss[i]) {
+        when (val char = str[index]) {
             in '0'..'9' -> {
-                d += ss[i]
+                digits += str[index]
             }
 
-            'r' -> {
-                j = r.length - 1
-                cubes[r] = maxOf(cubes[r] ?: 0, d.toInt())
-            }
-
-            'g' -> {
-                j = g.length - 1
-                cubes[g] = maxOf(cubes[g] ?: 0, d.toInt())
-            }
-
-            'b' -> {
-                j = b.length - 1
-                cubes[b] = maxOf(cubes[b] ?: 0, d.toInt())
+            'r', 'g', 'b' -> {
+                val color = cubes[rgb[char]]!!
+                j = color.nameLength() - 1
+                color.cubeSize = maxOf(color.cubeSize, digits.toInt())
+                cubes[rgb[char]!!] = color
             }
 
             ',', ';' -> {
-                d = ""
+                digits = ""
             }
         }
 
-        i += j
+        index += j
     }
 
-    return cubes.values.reduce { acc, v -> acc * v }
+    return cubes.values.map { it.cubeSize }.reduce { acc, v -> acc * v }
 }
+
