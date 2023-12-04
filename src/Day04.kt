@@ -1,11 +1,19 @@
 private const val CURRENT_DAY = "Day04"
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.sumOf { s -> p41(s) }
+        return input.sumOf { s -> 1 shl (findMatched(s) - 1) } // or power of 2
     }
 
     fun part2(input: List<String>): Int {
-        return 0
+        val cards = MutableList(input.size) { 1 } // each card will be processed 1 time
+
+        for (i in input.indices) {
+            for (j in 1..findMatched(input[i])) {
+                cards[i + j] += cards[i]
+            }
+        }
+
+        return cards.sum()
     }
 
     val input = readInput(CURRENT_DAY)
@@ -13,13 +21,11 @@ fun main() {
     part2(input).println()
 }
 
-private fun p41(s: String): Int {
+private fun findMatched(s: String): Int {
     val space = "\\s+".toRegex()
-
-    // winners cards 2^N where N = count of matched numbers in a card
     // left and right parts have unique numbers
 
-    val matched = s.substring(s.indexOf(":") + 1, s.length)
+    return s.substringAfter(":")
         .replace("|", "")
         .trim()
         .split(space)
@@ -27,10 +33,4 @@ private fun p41(s: String): Int {
         .eachCount()
         .filter { (_, v) -> v > 1 }
         .count()
-
-    return 1 shl (matched - 1) // can be changed to 2 pow
-}
-
-private fun p42(s: String): Int {
-    return 0
 }
