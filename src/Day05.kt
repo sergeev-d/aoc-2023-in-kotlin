@@ -1,4 +1,8 @@
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
+import kotlin.time.measureTime
 
 private const val CURRENT_DAY = "Day05"
 fun main() {
@@ -13,8 +17,10 @@ fun main() {
     }
 
     val input = readInput(CURRENT_DAY)
-    part1(input).println()
-    part2(input).println()
+    val t1 = measureTime { part1(input).println() }
+    val t2 = measureTime { part2(input).println() }
+    t1.println()
+    t2.println()
 }
 
 private fun findMinOfLocation(input: List<Char>, transform: (list: List<Long>) -> List<LongRange>): Long {
@@ -30,7 +36,7 @@ private fun findMinOfLocation(input: List<Char>, transform: (list: List<Long>) -
     while (i < input.size) {
         when (val c = input[i]) {
             ':' -> {
-                if (tempList.isNotEmpty() && isSeedRow) {
+                if (isSeedRow && tempList.isNotEmpty()) {
                     isSeedRow = false
                     seeds.addAll(transform(tempList))
                     tempList = mutableListOf()
