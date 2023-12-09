@@ -8,10 +8,6 @@ fun main() {
         return input.sumOf { s -> p12(s) }
     }
 
-    // test if implementation meets criteria from the description, like:
-//    val testInput = readInput("Day01_test")
-//    check(part1(testInput) == 1)
-
     val input = readInput(CURRENT_DAY)
     part1(input).println()
     part2(input).println()
